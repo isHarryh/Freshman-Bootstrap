@@ -1,0 +1,19 @@
+# .NET build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+TestResults/
+*.trx
+
+# Visual Studio and user-specific settings
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Other local IDE files
+.idea/
+.vscode/
