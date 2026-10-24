@@ -20,6 +20,25 @@ public sealed class DialogService
         return dialog.ShowDialog() == true;
     }
 
+    public async Task<bool> ConfirmUpgradeAsync(UpgradeConfirmation confirmation)
+    {
+        var dialog = new UiMessageBox
+        {
+            Title = Strings.UpgradeDialog.Title,
+            Content = string.Format(
+                Strings.UpgradeDialog.MessageFormat,
+                confirmation.SoftwareName,
+                confirmation.CurrentVersion,
+                confirmation.TargetVersion),
+            PrimaryButtonText = Strings.UpgradeDialog.Confirm,
+            CloseButtonText = Strings.Common.Cancel,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Owner = Application.Current.MainWindow,
+        };
+
+        return await dialog.ShowDialogAsync() == UiMessageBoxResult.Primary;
+    }
+
     public async Task<bool> ConfirmUninstallAsync()
     {
         var dialog = new UiMessageBox

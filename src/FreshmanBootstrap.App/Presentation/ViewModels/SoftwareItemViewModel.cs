@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using FreshmanBootstrap.Core;
 using FreshmanBootstrap.Core.Abstractions;
 using FreshmanBootstrap.Core.Models;
+using Wpf.Ui.Controls;
 
 namespace FreshmanBootstrap.App.Presentation.ViewModels;
 
@@ -12,13 +13,18 @@ public partial class SoftwareItemViewModel : ObservableObject
 {
     private readonly ISoftware _software;
     private readonly Func<IReadOnlyList<PathRepairPlan>, bool> _confirmPathRepair;
+    private readonly Func<UpgradeConfirmation, Task<bool>> _confirmUpgrade;
     private SoftwareInspection _inspection = SoftwareInspection.Empty;
     private IReadOnlyList<IInstallOption> _installOptions = Array.Empty<IInstallOption>();
 
-    public SoftwareItemViewModel(ISoftware software, Func<IReadOnlyList<PathRepairPlan>, bool> confirmPathRepair)
+    public SoftwareItemViewModel(
+        ISoftware software,
+        Func<IReadOnlyList<PathRepairPlan>, bool> confirmPathRepair,
+        Func<UpgradeConfirmation, Task<bool>> confirmUpgrade)
     {
         _software = software;
         _confirmPathRepair = confirmPathRepair;
+        _confirmUpgrade = confirmUpgrade;
     }
 
     public string Name => _software.DisplayName;
@@ -51,6 +57,9 @@ public partial class SoftwareItemViewModel : ObservableObject
     private string _actionText = Strings.EnvironmentPage.Install;
 
     [ObservableProperty]
+    private ControlAppearance _actionAppearance = ControlAppearance.Primary;
+
+    [ObservableProperty]
     private SoftwareStatus _status = SoftwareStatus.Unknown;
 
     [ObservableProperty]
@@ -66,7 +75,7 @@ public partial class SoftwareItemViewModel : ObservableObject
     private Visibility _busyVisibility = Visibility.Collapsed;
 
     public bool CanAct =>
-        !IsBusy && Status is SoftwareStatus.NotInstalled or SoftwareStatus.NeedsRepair or SoftwareStatus.Failed;
+        !IsBusy && Status is SoftwareStatus.NotInstalled or SoftwareStatus.Upgradable or SoftwareStatus.NeedsRepair or SoftwareStatus.Failed;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -89,6 +98,7 @@ public partial class SoftwareItemViewModel : ObservableObject
             Status = SoftwareStatus.Failed;
             StatusText = Strings.EnvironmentPage.Failed;
             ActionText = Strings.EnvironmentPage.Retry;
+            ActionAppearance = ControlAppearance.Primary;
         }
         finally
         {
@@ -96,7 +106,25 @@ public partial class SoftwareItemViewModel : ObservableObject
         }
     }
 
-    public async Task InstallAsync()
+    public Task InstallAsync() => RunPackageActionAsync();
+
+    public async Task UpgradeAsync()
+    {
+        if (_inspection.Best is not { } best || !TryGetUpgradeTarget(out var target))
+        {
+            return;
+        }
+
+        var confirmation = new UpgradeConfirmation(Name, best.Version.ToString(), target.ToString());
+        if (!await _confirmUpgrade(confirmation))
+        {
+            return;
+        }
+
+        await RunPackageActionAsync();
+    }
+
+    private async Task RunPackageActionAsync()
     {
         SetError(null);
         IsBusy = true;
@@ -179,6 +207,7 @@ public partial class SoftwareItemViewModel : ObservableObject
             Status = SoftwareStatus.Failed;
             StatusText = Strings.EnvironmentPage.Failed;
             ActionText = Strings.EnvironmentPage.Retry;
+            ActionAppearance = ControlAppearance.Primary;
             IsBusy = false;
             return;
         }
@@ -193,6 +222,7 @@ public partial class SoftwareItemViewModel : ObservableObject
         return Status switch
         {
             SoftwareStatus.NotInstalled => InstallAsync(),
+            SoftwareStatus.Upgradable => UpgradeAsync(),
             SoftwareStatus.NeedsRepair => RepairAsync(),
             SoftwareStatus.Failed => RefreshAsync(),
             _ => Task.CompletedTask,
@@ -245,20 +275,44 @@ public partial class SoftwareItemViewModel : ObservableObject
             Status = SoftwareStatus.NotInstalled;
             StatusText = Strings.EnvironmentPage.NotInstalled;
             ActionText = Strings.EnvironmentPage.Install;
+            ActionAppearance = ControlAppearance.Primary;
             return;
         }
 
-        if (PostProcessItems.All(item => item.IsChecked))
+        if (PostProcessItems.Any(item => !item.IsChecked))
         {
-            Status = SoftwareStatus.Installed;
-            StatusText = Strings.EnvironmentPage.Installed;
-            ActionText = Strings.EnvironmentPage.NoAction;
+            Status = SoftwareStatus.NeedsRepair;
+            StatusText = Strings.EnvironmentPage.NeedsRepair;
+            ActionText = Strings.EnvironmentPage.Repair;
+            ActionAppearance = ControlAppearance.Primary;
             return;
         }
 
-        Status = SoftwareStatus.NeedsRepair;
-        StatusText = Strings.EnvironmentPage.NeedsRepair;
-        ActionText = Strings.EnvironmentPage.Repair;
+        if (TryGetUpgradeTarget(out _))
+        {
+            Status = SoftwareStatus.Upgradable;
+            StatusText = Strings.EnvironmentPage.Installed;
+            ActionText = Strings.EnvironmentPage.Upgrade;
+            ActionAppearance = ControlAppearance.Secondary;
+            return;
+        }
+
+        Status = SoftwareStatus.Installed;
+        StatusText = Strings.EnvironmentPage.Installed;
+        ActionText = Strings.EnvironmentPage.Ready;
+        ActionAppearance = ControlAppearance.Secondary;
+    }
+
+    private bool TryGetUpgradeTarget(out VersionNumber target)
+    {
+        target = default;
+        if (_inspection.Best is not { } best)
+        {
+            return false;
+        }
+
+        return VersionNumber.TryParse(_software.PackagedVersion, out target)
+            && VersionUpgradePolicy.CanUpgrade(best.Version, target);
     }
 
     private void SetFailure(string? message)
@@ -267,6 +321,7 @@ public partial class SoftwareItemViewModel : ObservableObject
         Status = SoftwareStatus.Failed;
         StatusText = Strings.EnvironmentPage.Failed;
         ActionText = Strings.EnvironmentPage.Retry;
+        ActionAppearance = ControlAppearance.Primary;
         IsBusy = false;
     }
 

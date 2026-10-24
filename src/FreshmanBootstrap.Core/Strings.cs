@@ -24,14 +24,15 @@ public static class Strings
         public const string InstalledVersion = "已安装的版本";
         public const string Status = "状态";
         public const string Actions = "操作";
-        public const string Install = "立即安装";
+        public const string Install = "一键安装";
+        public const string Upgrade = "可升级";
         public const string Repair = "立即修复";
         public const string Retry = "重试";
         public const string Refresh = "重新检测";
         public const string Installed = "已安装";
         public const string NotInstalled = "未安装";
         public const string NeedsRepair = "需要额外操作";
-        public const string NoAction = "无需操作";
+        public const string Ready = "已就绪";
         public const string Working = "处理中…";
         public const string Failed = "失败";
         public const string Unknown = "未知";
@@ -47,6 +48,13 @@ public static class Strings
         public const string ProcessFailed = "安装程序返回代码 {0}。{1}";
         public const string ProcessTimedOut = "安装程序超时未完成。";
         public const string StageInstalling = "正在安装 {0}…";
+    }
+
+    public static class UpgradeDialog
+    {
+        public const string Title = "确认升级";
+        public const string MessageFormat = "是否要将 {0} 从 {1} 升级到 {2} 版本？\n您需要确保已关闭了正在运行的 {0} 程序。";
+        public const string Confirm = "确认升级";
     }
 
     public static class PathRepairDialog

@@ -5,6 +5,7 @@ public enum SoftwareStatus
     Unknown,
     NotInstalled,
     Installed,
+    Upgradable,
     NeedsRepair,
     Working,
     Failed,

@@ -12,11 +12,12 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         SoftwareCatalog catalog,
         Func<IReadOnlyList<PathRepairPlan>, bool> confirmPathRepair,
+        Func<UpgradeConfirmation, Task<bool>> confirmUpgrade,
         AboutViewModel about)
     {
         About = about;
         Items = new ObservableCollection<SoftwareItemViewModel>(
-            catalog.All.Select(software => new SoftwareItemViewModel(software, confirmPathRepair)));
+            catalog.All.Select(software => new SoftwareItemViewModel(software, confirmPathRepair, confirmUpgrade)));
     }
 
     public ObservableCollection<SoftwareItemViewModel> Items { get; }
@@ -43,7 +44,11 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            await Task.WhenAll(Items.Select(item => item.RefreshAsync()));
+            foreach (var item in Items)
+            {
+                await item.RefreshAsync();
+            }
+
             StatusMessage = string.Empty;
         }
         finally

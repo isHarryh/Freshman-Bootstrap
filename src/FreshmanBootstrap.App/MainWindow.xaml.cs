@@ -28,7 +28,7 @@ public partial class MainWindow : FluentWindow
             uninstall: () => RunUninstallerAsync(uninstallerPath!, dialogService),
             canUninstall: uninstallerPath is not null);
 
-        _viewModel = new MainViewModel(host.Software, dialogService.ConfirmPathRepair, about);
+        _viewModel = new MainViewModel(host.Software, dialogService.ConfirmPathRepair, dialogService.ConfirmUpgradeAsync, about);
         DataContext = _viewModel;
 
         EnvironmentNavigationItem.Content = Strings.MainWindow.EnvironmentPageName;

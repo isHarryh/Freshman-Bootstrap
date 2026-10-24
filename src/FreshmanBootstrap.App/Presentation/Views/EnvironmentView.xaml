@@ -46,6 +46,7 @@
                         <DataTemplate>
                             <ui:Button Content="{Binding ActionText}"
                                        Command="{Binding PrimaryActionCommand}"
+                                       Appearance="{Binding ActionAppearance}"
                                        IsEnabled="{Binding CanAct}"
                                        Padding="12,4" />
                         </DataTemplate>
