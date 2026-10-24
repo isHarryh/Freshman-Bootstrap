@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FreshmanBootstrap.App/FreshmanBootstrap.App.csproj" />
+    <Project Path="src/FreshmanBootstrap.Core/FreshmanBootstrap.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FreshmanBootstrap.Tests/FreshmanBootstrap.Tests.csproj" />
+  </Folder>
+</Solution>

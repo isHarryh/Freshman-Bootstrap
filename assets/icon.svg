@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="FreshmanBootstrap">
+  <defs>
+    <linearGradient id="fb-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8FE3AE"/>
+      <stop offset=".55" stop-color="#3FB878"/>
+      <stop offset="1" stop-color="#1D8753"/>
+    </linearGradient>
+    <radialGradient id="fb-shine" cx=".3" cy=".18" r=".95">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".4"/>
+      <stop offset=".6" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="256" height="256" rx="58" fill="url(#fb-bg)"/>
+  <rect width="256" height="256" rx="58" fill="url(#fb-shine)"/>
+  <ellipse cx="128" cy="206" rx="56" ry="7" fill="#135C39" opacity=".28"/>
+
+  <g transform="translate(128 134) scale(1.08) translate(-128 -134)">
+    <path d="M128 92 C128 120 127 138 128 170" stroke="#F2FFF6" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <path d="M128 126 C108 124 90 112 82 88 C106 86 122 102 128 118 Z" fill="#FFFFFF"/>
+    <path d="M128 108 C148 106 164 94 172 68 C148 66 132 84 128 98 Z" fill="#D8F6E0"/>
+    <rect x="84" y="152" width="88" height="48" rx="16" fill="#FFFFFF"/>
+    <path d="M97 168 H159" stroke="#2E9E64" stroke-opacity=".22" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <path transform="translate(196 97.5) scale(1.08) translate(-196 -91.5)" d="M196 78 L200.5 87 L209.5 91.5 L200.5 96 L196 105 L191.5 96 L182.5 91.5 L191.5 87 Z" fill="#FFFFFF" opacity=".9"/>
+  <path d="M62 66 L65 72.5 L71.5 75.5 L65 78.5 L62 85 L59 78.5 L52.5 75.5 L59 72.5 Z" fill="#FFFFFF" opacity=".65"/>
+</svg>

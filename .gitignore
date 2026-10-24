@@ -7,6 +7,9 @@ artifacts/
 TestResults/
 *.trx
 
+# Packaged installer payload
+payload/
+
 # Visual Studio and user-specific settings
 .vs/
 *.suo

@@ -1,0 +1,140 @@
+<UserControl x:Class="FreshmanBootstrap.App.Presentation.Views.EnvironmentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:Button Grid.Row="0"
+                   Margin="0,8,0,10"
+                   HorizontalAlignment="Right"
+                   Content="{Binding RefreshText}"
+                   Command="{Binding RefreshAllCommand}"
+                   IsEnabled="{Binding CanRefresh}">
+            <ui:Button.Icon>
+                <ui:SymbolIcon Symbol="ArrowSync24" />
+            </ui:Button.Icon>
+        </ui:Button>
+
+        <ui:DataGrid x:Name="SoftwareGrid"
+                  Grid.Row="1"
+                  ItemsSource="{Binding Items}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  CanUserReorderColumns="False"
+                  CanUserResizeRows="False"
+                  CanUserSortColumns="False"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  RowDetailsVisibilityMode="VisibleWhenSelected"
+                  Background="Transparent"
+                  BorderThickness="0">
+            <ui:DataGrid.Columns>
+                <DataGridTextColumn x:Name="NameColumn" Binding="{Binding Name}" Width="120" IsReadOnly="True" />
+                <DataGridTextColumn x:Name="UsageColumn" Binding="{Binding Description}" Width="*" MinWidth="150" IsReadOnly="True" />
+                <DataGridTextColumn x:Name="PackagedVersionColumn" Binding="{Binding PackagedVersionText}" Width="130" IsReadOnly="True" />
+                <DataGridTextColumn x:Name="InstalledVersionColumn" Binding="{Binding InstalledVersionText}" Width="150" IsReadOnly="True" />
+                <DataGridTextColumn x:Name="StatusColumn" Binding="{Binding StatusText}" Width="120" IsReadOnly="True" />
+                <DataGridTemplateColumn x:Name="ActionColumn" Width="130">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ui:Button Content="{Binding ActionText}"
+                                       Command="{Binding PrimaryActionCommand}"
+                                       IsEnabled="{Binding CanAct}"
+                                       Padding="12,4" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </ui:DataGrid.Columns>
+            <ui:DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid Margin="16,6,16,14">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="{Binding InstalledVersionsHeader}"
+                                   FontWeight="SemiBold"
+                                   Visibility="{Binding InstalledVersionsVisibility}" />
+                        <ItemsControl Grid.Row="1"
+                                      Grid.Column="0"
+                                      ItemsSource="{Binding InstalledVersionLines}"
+                                      Visibility="{Binding InstalledVersionsVisibility}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Margin="0,3,0,0" TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Grid.Row="2"
+                                   Grid.Column="0"
+                                   Text="{Binding PostProcessHeader}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,12,0,0"
+                                   Visibility="{Binding PostProcessVisibility}" />
+                        <ItemsControl Grid.Row="3"
+                                      Grid.Column="0"
+                                      ItemsSource="{Binding PostProcessItems}"
+                                      Visibility="{Binding PostProcessVisibility}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,3">
+                                        <ui:SymbolIcon Symbol="CheckmarkCircle24"
+                                                       Foreground="{DynamicResource SystemFillColorSuccessBrush}"
+                                                       FontSize="16"
+                                                       Margin="0,0,6,0"
+                                                       VerticalAlignment="Center"
+                                                       Visibility="{Binding CheckedVisibility}" />
+                                        <ui:SymbolIcon Symbol="Circle24"
+                                                       Foreground="{DynamicResource SystemFillColorNeutralBrush}"
+                                                       FontSize="16"
+                                                       Margin="0,0,6,0"
+                                                       VerticalAlignment="Center"
+                                                       Visibility="{Binding UncheckedVisibility}" />
+                                        <TextBlock Text="{Binding Description}"
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <ui:ProgressRing Grid.Row="0"
+                                         Grid.Column="1"
+                                         IsIndeterminate="True"
+                                         Width="16"
+                                         Height="16"
+                                         Margin="8,4,0,0"
+                                         VerticalAlignment="Top"
+                                         Visibility="{Binding BusyVisibility}" />
+                        <TextBlock Grid.Row="4"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   Text="{Binding ErrorMessage}"
+                                   Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,8,0,0"
+                                   Visibility="{Binding ErrorVisibility}" />
+                    </Grid>
+                </DataTemplate>
+            </ui:DataGrid.RowDetailsTemplate>
+        </ui:DataGrid>
+    </Grid>
+</UserControl>
