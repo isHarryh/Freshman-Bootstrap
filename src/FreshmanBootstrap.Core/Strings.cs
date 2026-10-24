@@ -59,21 +59,15 @@ public static class Strings
 
     public static class PathRepairDialog
     {
-        public const string Title = "确认修复 PATH 环境变量";
+        public const string Title = "确认修复";
+        public const string Summary = "为了修复此问题，需要对 PATH 环境变量配置进行修改。";
         public const string Header = "以下相关路径条目将被调整，其他条目保持不变：";
         public const string MachineLevel = "系统级 PATH";
         public const string UserLevel = "用户级 PATH";
-        public const string CurrentValueFormat = "调整前：{0}";
-        public const string NewValueFormat = "调整后：{0}";
-        public const string ChangeFormat = "{0}：{1}（{2}）";
         public const string Confirm = "确认修复";
         public const string KindAdd = "新增";
         public const string KindMove = "调整顺序";
-        public const string KindRemove = "移除重复项";
-        public const string ReasonMissing = "未加入 PATH";
-        public const string ReasonLowerPriority = "优先级低于其他版本";
-        public const string ReasonWindowsApps = "优先级低于 Windows 应用别名";
-        public const string ReasonDuplicate = "重复条目";
+        public const string KindRemove = "移除";
     }
 
     public static class AboutPage

@@ -33,6 +33,9 @@ public partial class App : Application
                 Title = AppInfo.DisplayName,
                 Content = exception.Message,
                 CloseButtonText = Strings.Common.Ok,
+                // No owner window exists yet, so center on screen and keep the default Topmost
+                // to make sure the fatal error is not hidden behind other windows.
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
             }.ShowDialogAsync();
             Shutdown(1);
             return;

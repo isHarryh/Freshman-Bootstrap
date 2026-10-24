@@ -32,6 +32,7 @@ public sealed class DialogService
                 confirmation.TargetVersion),
             PrimaryButtonText = Strings.UpgradeDialog.Confirm,
             CloseButtonText = Strings.Common.Cancel,
+            Topmost = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Owner = Application.Current.MainWindow,
         };
@@ -48,6 +49,7 @@ public sealed class DialogService
             PrimaryButtonText = Strings.AboutPage.Uninstall,
             CloseButtonText = Strings.Common.Cancel,
             PrimaryButtonAppearance = ControlAppearance.Danger,
+            Topmost = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Owner = Application.Current.MainWindow,
         };
@@ -62,6 +64,7 @@ public sealed class DialogService
             Title = AppInfo.DisplayName,
             Content = message,
             CloseButtonText = Strings.Common.Ok,
+            Topmost = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Owner = Application.Current.MainWindow,
         };

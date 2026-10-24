@@ -36,3 +36,7 @@ public sealed record PathRepairPlan(
     PathValue Original,
     string NewValue,
     IReadOnlyList<PathChange> Changes);
+
+public sealed record PathRepairSection(
+    EnvironmentLevel Level,
+    IReadOnlyList<PathChange> Changes);
