@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  schedule:
+    - cron: "0 2 1,16 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Run tests
+        run: dotnet test tests/FreshmanBootstrap.Tests/FreshmanBootstrap.Tests.csproj -c Release --nologo
+
+      - name: Compute version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = & .\.github\scripts\compute-version.ps1 -RepositoryPath .
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "version=$($tag.TrimStart('v'))" >> $env:GITHUB_OUTPUT
+          Write-Host "Release version: $tag"
+
+      - name: Prepare payload
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet run --project src/FreshmanBootstrap.App/FreshmanBootstrap.App.csproj -c Release -- --prepare --fresh
+
+      - name: Publish application
+        run: dotnet publish src/FreshmanBootstrap.App/FreshmanBootstrap.App.csproj -c Release -p:PublishProfile=win-x64 -p:Version=${{ steps.version.outputs.version }} --nologo
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --version=6.7.1 --no-progress -y
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=${{ steps.version.outputs.version }} installer\FreshmanBootstrap.iss
+
+      - name: Generate release notes
+        shell: pwsh
+        run: |
+          $manifest = Get-Content payload\manifest.json -Raw | ConvertFrom-Json
+          $lines = @(
+            "**Freshman Bootstrap ${{ steps.version.outputs.tag }}**",
+            "",
+            "Included third-party packages:",
+            ""
+          )
+          foreach ($package in $manifest.packages) {
+            $lines += "- $($package.softwareId) v$($package.version)"
+          }
+          $lines | Set-Content release-notes.md -Encoding utf8
+
+      - name: Create release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" "artifacts/FreshmanBootstrap-v${{ steps.version.outputs.version }}-Setup.exe" --title "${{ steps.version.outputs.tag }}" --notes-file release-notes.md
